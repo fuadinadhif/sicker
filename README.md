@@ -48,4 +48,4 @@
 
 ## Note
 
-The ID used in the fetch process is hard-coded as `1`. Please make an adjustment before if your room has different ID in your data
+The ID used in the fetch process is hard-coded as `1`. Please make an adjustment before if your room has different ID in your database.
