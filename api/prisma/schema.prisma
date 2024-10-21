@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReservationStatus {
+  PENDING
+  RESERVED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Reservation Reservation[]
+}
+
+model Property {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @db.LongText()
+  latitude    Float
+  longitude   Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  Room  Room[]
+  Image Image[]
+}
+
+model Room {
+  id          Int      @id @default(autoincrement())
+  propertyId  Int
+  type        String
+  description String   @db.LongText()
+  defaultRate Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Property Property @relation(fields: [propertyId], references: [id])
+
+  RoomRate    RoomRate[]
+  Reservation Reservation[]
+  Image       Image[]
+}
+
+model Image {
+  id         Int      @id @default(autoincrement())
+  url        String
+  propertyId Int?
+  roomId     Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  Property Property? @relation(fields: [propertyId], references: [id])
+  Room     Room?     @relation(fields: [roomId], references: [id])
+}
+
+model RoomRate {
+  id        Int      @id @default(autoincrement())
+  roomId    Int
+  rate      Float
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Room Room @relation(fields: [roomId], references: [id])
+}
+
+model Reservation {
+  id        Int               @id @default(autoincrement())
+  userId    Int
+  roomId    Int
+  status    ReservationStatus @default(PENDING)
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
+  Room Room @relation(fields: [roomId], references: [id])
+}
